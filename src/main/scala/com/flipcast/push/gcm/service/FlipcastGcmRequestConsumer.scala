@@ -20,13 +20,15 @@ import com.flipcast.push.model.requests.{RecordPushHistoryRequest, FlipcastPushR
  *
  * @author Phaneesh Nagaraja
  */
-class FlipcastGcmRequestConsumer extends FlipcastRequestConsumer[FlipcastPushRequest] with FlipcastPushProtocol with GcmProtocol {
+class FlipcastGcmRequestConsumer(priorityTag: String) extends FlipcastRequestConsumer with FlipcastPushProtocol with GcmProtocol {
 
   override def configType() = "gcm"
 
   override def init() {
 
   }
+
+  override def priority(): String = priorityTag
 
   override def consume(request: FlipcastPushRequest) =  {
     val service = GCMServicePool.service(request.configName)
@@ -133,4 +135,6 @@ class FlipcastGcmRequestConsumer extends FlipcastRequestConsumer[FlipcastPushReq
       }
     true
   }
+
+
 }

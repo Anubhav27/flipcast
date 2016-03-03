@@ -9,7 +9,7 @@ name          := "flipcast"
 
 version       := "2.2"
 
-scalaVersion  := "2.11.2"
+scalaVersion  := "2.11.6"
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
 
@@ -31,29 +31,28 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.spray"                        %%   "spray-can"                     % "1.3.2",
-  "io.spray"                        %%   "spray-routing"                 % "1.3.2",
-  "io.spray"                        %%   "spray-testkit"                 % "1.3.2"                  % "test",
-  "io.spray"                        %%   "spray-client"                  % "1.3.2",
-  "io.spray"                        %%   "spray-json"                    % "1.2.6",
-  "com.typesafe.akka"               %%   "akka-actor"                    % "2.3.6",
-  "com.typesafe.akka"               %%   "akka-cluster"                  % "2.3.6",
-  "com.typesafe.akka"               %%   "akka-contrib"                  % "2.3.6",
-  "com.typesafe.akka"               %%   "akka-slf4j"                    % "2.3.6",
-  "com.typesafe.akka"               %%   "akka-testkit"                  % "2.3.6"                  % "test",
+  "io.spray"                        %%   "spray-can"                     % "1.3.3",
+  "io.spray"                        %%   "spray-routing"                 % "1.3.3",
+  "io.spray"                        %%   "spray-testkit"                 % "1.3.3"                  % "test",
+  "io.spray"                        %%   "spray-client"                  % "1.3.3",
+  "io.spray"                        %%   "spray-json"                    % "1.3.2",
+  "com.typesafe.akka"               %%   "akka-actor"                    % "2.3.11",
+  "com.typesafe.akka"               %%   "akka-slf4j"                    % "2.3.11",
+  "com.typesafe.akka"               %%   "akka-testkit"                  % "2.3.11"                  % "test",
   "ch.qos.logback"                  %    "logback-classic"               % "1.1.2",
   "com.fasterxml.uuid"              %    "java-uuid-generator"           % "3.1.3",
-  "com.codahale.metrics"            %    "metrics-logback"               % "3.0.1",
-  "com.codahale.metrics"            %    "metrics-graphite"              % "3.0.1",
-  "com.codahale.metrics"            %    "metrics-jvm"                   % "3.0.1",
+  "com.codahale.metrics"            %    "metrics-logback"               % "3.0.2",
+  "com.codahale.metrics"            %    "metrics-graphite"              % "3.0.2",
+  "com.codahale.metrics"            %    "metrics-jvm"                   % "3.0.2",
   "commons-validator"               %    "commons-validator"             % "1.4.0",
   "commons-codec"                   %    "commons-codec"                 % "1.5",
-  "com.google.guava"                %    "guava"                         % "15.0",
-  "com.notnoop.apns"                %    "apns"                          % "1.0.0.Beta4",
-  "org.mongodb"                     %%   "casbah"                        % "2.8.0-RC0",
+  "com.google.guava"                %    "guava"                         % "18.0",
+  "com.notnoop.apns"                %    "apns"                          % "1.0.0.Beta6",
+  "org.mongodb"                     %%   "casbah"                        % "3.1.0",
   "commons-io"                      %    "commons-io"                    % "2.4",
-  "com.google.code.findbugs"        %    "jsr305"                        % "2.0.3",
-  "org.specs2"                      %%   "specs2"                        % "2.3.11"                 % "test"
+  "com.github.sstone"               %%   "amqp-client"                   % "1.5",
+  "com.google.code.findbugs"        %    "jsr305"                        % "3.0.1",
+  "org.specs2"                      %%   "specs2"                        % "3.7"                 % "test"
 )
 
 assemblySettings
@@ -68,6 +67,6 @@ jarName in assembly := "flipcast-service.jar"
 
 logLevel in assembly := Level.Warn
 
-seq(Revolver.settings: _*)
+Seq(Revolver.settings: _*)
 
-seq(SbtStartScript.startScriptForJarSettings: _*)
+Seq(SbtStartScript.startScriptForJarSettings: _*)

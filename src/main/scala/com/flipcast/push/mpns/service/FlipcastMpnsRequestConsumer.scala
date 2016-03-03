@@ -24,7 +24,7 @@ import scala.xml.XML
  *
  * @author Phaneesh Nagaraja
  */
-class FlipcastMpnsRequestConsumer extends FlipcastRequestConsumer[FlipcastPushRequest] with FlipcastPushProtocol with GcmProtocol {
+class FlipcastMpnsRequestConsumer(priorityTag: String) extends FlipcastRequestConsumer with FlipcastPushProtocol with GcmProtocol {
 
   override def configType() = "mpns"
 
@@ -32,8 +32,10 @@ class FlipcastMpnsRequestConsumer extends FlipcastRequestConsumer[FlipcastPushRe
 
   }
 
+  override def priority(): String = priorityTag
+
+
   override def consume(request: FlipcastPushRequest) = {
-//    val config = Flipcast.pushConfigurationProvider.config(request.configName).mpns
     val failedIds = new ListBuffer[String]()
     val invalidDevices = new ListBuffer[String]()
     request.registration_ids.foreach( r => {
@@ -81,7 +83,7 @@ class FlipcastMpnsRequestConsumer extends FlipcastRequestConsumer[FlipcastPushRe
     invalidDevices.foreach( r => {
       Flipcast.serviceRegistry.actor("deviceHouseKeepingManager") ! DeviceHousekeepingRequest(request.configName, r)
     })
-    if(failedIds.size > 0) {
+    if(failedIds.nonEmpty) {
       resend(FlipcastPushRequest(request.configName, failedIds.toList, request.data, request.ttl, request.delayWhileIdle, request.priority))
     }
     true

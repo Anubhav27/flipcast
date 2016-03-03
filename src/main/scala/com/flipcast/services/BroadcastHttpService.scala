@@ -58,7 +58,7 @@ object BroadcastHttpServiceWorker extends BaseHttpServiceWorker with FlipcastPus
         var limit = 1
         List.range[Long](0, batches).foreach( batch => {
           val split = BulkMessageRequest(request.configName, Map.empty, request.message, batch.toInt, limit * batchSize)
-          Flipcast.serviceRegistry.actorLookup(config.priorityConfigs(request.message.priority.getOrElse("default")).workerName) ! split
+          Flipcast.serviceRegistry.actor(config.priorityConfigs(request.message.priority.getOrElse("default")).workerName) ! split
           limit += 1
         })
         ServiceSuccessResponse[MulticastSuccessResponse](MulticastSuccessResponse(deviceCount, batches))

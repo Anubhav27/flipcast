@@ -1,9 +1,6 @@
 package com.flipcast.push.config
 
-import akka.contrib.pattern.DistributedPubSubExtension
-import akka.contrib.pattern.DistributedPubSubMediator.Publish
 import akka.event.slf4j.Logger
-import com.flipcast.Flipcast
 import com.google.common.cache.CacheBuilder
 
 import scala.collection.JavaConverters._
@@ -24,8 +21,6 @@ object PushConfigurationManager {
     .initialCapacity(8)
     .build[String, PushConfig]()
 
-  val mediator = DistributedPubSubExtension(Flipcast.system).mediator
-
   def init() (implicit provider: PushConfigurationProvider) {
     val start = System.currentTimeMillis()
     log.info("Loading push configuration...")
@@ -41,7 +36,7 @@ object PushConfigurationManager {
 
   def save(config: PushConfig) = {
     val result = pushConfigurationProvider.save(config)
-    mediator ! Publish("pushConfig", PushConfigUpdatedMessage(config.configName, config))
+//    mediator ! Publish("pushConfig", PushConfigUpdatedMessage(config.configName, config))
     result
   }
 
@@ -60,7 +55,7 @@ object PushConfigurationManager {
     val result = pushConfigurationProvider.delete(configName)
     result match {
       case true =>
-        mediator ! Publish("pushConfig", PushConfigDeletedMessage(configName))
+//        mediator ! Publish("pushConfig", PushConfigDeletedMessage(configName))
       case false => None
     }
     result

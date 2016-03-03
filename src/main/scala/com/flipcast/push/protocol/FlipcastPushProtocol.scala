@@ -29,7 +29,7 @@ trait FlipcastPushProtocol extends DefaultJsonProtocol with SprayJsonSupport {
       }
       JsObject(
         "configName" -> JsString(obj.configName),
-        "registration_ids" -> JsArray(obj.registration_ids.filter( _.trim.length > 0).map( JsString(_))),
+        "registration_ids" -> JsArray(obj.registration_ids.filter( _.trim.length > 0).map( JsString(_)).toVector),
         "data" -> data,
         "ttl" -> ttl,
         "delayWhileIdle" -> delayWhileIdle

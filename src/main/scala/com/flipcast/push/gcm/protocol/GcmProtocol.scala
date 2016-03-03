@@ -64,7 +64,7 @@ trait GcmProtocol extends DefaultJsonProtocol with SprayJsonSupport {
 
     def write(obj: GcmRequest) = {
       JsObject(
-        "registration_ids" -> JsArray(obj.registration_id.map(JsString(_))),
+        "registration_ids" -> JsArray(obj.registration_id.map(JsString(_)).toVector),
         "delay_while_idle" -> JsBoolean(obj.delay_while_idle),
         "time_to_live" -> JsNumber(obj.time_to_live),
         "data" -> JsonParser(obj.data)
@@ -119,7 +119,7 @@ trait GcmProtocol extends DefaultJsonProtocol with SprayJsonSupport {
         "success" -> JsNumber(obj.success),
         "failure" -> JsNumber(obj.failure),
         "canonical_ids" -> JsNumber(obj.canonical_ids),
-        "results" -> JsArray(obj.results.map(GcmResultFormat.write))
+        "results" -> JsArray(obj.results.map(GcmResultFormat.write).toVector)
       )
     }
 

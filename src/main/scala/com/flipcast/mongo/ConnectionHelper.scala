@@ -29,12 +29,10 @@ object ConnectionHelper {
       log.info("Database: %s".format(config.database))
       log.info("Hosts:" +config.hosts.mkString(","))
       val options = MongoClientOptions (
-        autoConnectRetry = true,
         socketKeepAlive = true,
         connectionsPerHost = config.connectionsPerHost,
         connectTimeout = config.connectTimeout,
         cursorFinalizerEnabled = true,
-        maxAutoConnectRetryTime = config.maxAutoConnectRetryTime,
         maxWaitTime = config.maxWaitTime,
         socketTimeout = config.socketTimeout,
         writeConcern = WriteConcern.Safe,

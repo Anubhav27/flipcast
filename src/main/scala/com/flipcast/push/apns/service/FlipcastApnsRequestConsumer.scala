@@ -14,13 +14,15 @@ import scala.collection.JavaConverters._
 /**
  * APNS consumer to send apns push messages
  */
-class FlipcastApnsRequestConsumer extends FlipcastRequestConsumer[FlipcastPushRequest] with FlipcastPushProtocol with ApnsProtocol {
+class FlipcastApnsRequestConsumer(priorityTag: String) extends FlipcastRequestConsumer with FlipcastPushProtocol with ApnsProtocol {
 
   override def configType() = "apns"
 
   override def init() {
 
   }
+
+  override def priority(): String = priorityTag
 
   def consume(request: FlipcastPushRequest) = {
     val service = ApnsServicePool.service(request.configName)

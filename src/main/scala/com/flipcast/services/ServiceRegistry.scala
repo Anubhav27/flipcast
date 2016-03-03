@@ -4,12 +4,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit._
 
 import akka.actor._
-import akka.cluster.routing._
-import akka.contrib.pattern.ClusterReceptionistExtension
 import akka.event.slf4j.Logger
 import akka.util.Timeout
 
-import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.reflect.ClassTag
 
@@ -38,26 +35,76 @@ class ServiceRegistry (implicit val system: ActorSystem) {
    * @param instances Total no of actor instances
    * @tparam T Actor or any of the subclasses of actor
    */
-  def register[T <: Actor : ClassTag](name: String, instances: Int = 1, dispatcher: String = "akka.actor.default-dispatcher", isLocal: Boolean = true) {
+  def register[T <: Actor : ClassTag](name: String, instances: Int = 1, dispatcher: String) {
     serviceCache.containsKey(name) match {
       case true => throw new IllegalArgumentException("Duplicate service registration")
       case false =>
-        val aRef = instances match {
+        instances match {
           case 1 =>
-            system.actorOf(Props[T].withDispatcher(dispatcher), name)
+            val aRef = system.actorOf(Props[T].withDispatcher(dispatcher), name)
+            serviceCache.put(name, aRef)
           case _ =>
-            system.actorOf(
-              ClusterRouterPool(AdaptiveLoadBalancingPool(
-                SystemLoadAverageMetricsSelector), ClusterRouterPoolSettings(
-                totalInstances = instances * 64, maxInstancesPerNode = instances,
-                allowLocalRoutees = isLocal, useRole = None)
-            ).props(Props[T]).withDispatcher(dispatcher), name)
+            List.range(0, instances).foreach( e => {
+              serviceCache.containsKey(name +"_" +e) match {
+                case true => None
+                case false =>
+                  val aRef = system.actorOf(Props[T].withDispatcher(dispatcher), name +"_" +e)
+                  serviceCache.put(name +"_" +e, aRef)
+              }
+            })
         }
-        ClusterReceptionistExtension(system).registerService(aRef)
-        log.info("Registered Service: " +Await.result(system.actorSelection("/user/" +name).resolveOne(), timeout.duration))
-        serviceCache.put(name, aRef)
     }
   }
+
+  /**
+    * Register a actor into the registry
+    * @param name Name of the actor that needs ot be registered
+    * @param actorHolder Actor or any of the subclasses of actor
+    */
+  def register(actorHolder: Props, name: String, dispatcher: String, instances: Int) {
+    if(instances == 1) {
+      serviceCache.containsKey(name) match {
+        case true => throw new IllegalArgumentException("Duplicate service registration")
+        case false =>
+          val aRef = system.actorOf(actorHolder.withDispatcher(dispatcher), name)
+          serviceCache.put(name, aRef)
+      }
+    } else {
+      List.range(0, instances).foreach( e => {
+        serviceCache.containsKey(name +"_" +e) match {
+          case true => None
+          case false =>
+            val aRef = system.actorOf(actorHolder.withDispatcher(dispatcher), name +"_" +e)
+            serviceCache.put(name +"_" +e, aRef)
+        }
+      })
+    }
+  }
+
+  /**
+    * De-Register a actor into the registry
+    * @param name Name of the actor that needs ot be registered
+    */
+  def deregister(name: String, instances: Int) {
+    if(instances == 1) {
+      serviceCache.containsKey(name) match {
+        case false => throw new IllegalArgumentException("No service registration found")
+        case true =>
+          val aRef = serviceCache.get(name)
+          aRef ! PoisonPill
+      }
+    } else {
+      List.range(0, instances).foreach( e => {
+        serviceCache.containsKey(name +"_" +e) match {
+          case false => None
+          case true =>
+            val aRef = serviceCache.get(name +"_" +e)
+            aRef ! PoisonPill
+        }
+      })
+    }
+  }
+
 
   /**
    * Lookup method for fetching back service worker actor
@@ -71,20 +118,4 @@ class ServiceRegistry (implicit val system: ActorSystem) {
       case false => throw new IllegalArgumentException("Invalid service! Service not registered: " +name)
     }
   }
-
-
-  /**
-   * Lookup for actors using akka actor system and a priority tag
-   * @param name name of the actor under "user" guardian
-   * @return ActorSelection
-   */
-  def actorLookup(name: String, priority: Option[String] = None) = {
-    priority match {
-      case Some(p) =>
-        system.actorSelection(String.format("/user/%s-%s",name, p))
-      case _ =>
-        system.actorSelection(String.format("/user/%s",name))
-    }
-  }
-
 }
