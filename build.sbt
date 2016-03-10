@@ -52,7 +52,7 @@ libraryDependencies ++= Seq(
   "commons-io"                      %    "commons-io"                    % "2.4",
   "com.github.sstone"               %%   "amqp-client"                   % "1.5",
   "com.google.code.findbugs"        %    "jsr305"                        % "3.0.1",
-  "org.specs2"                      %%   "specs2"                        % "3.7"                 % "test"
+  "org.specs2"                      %%   "specs2"                        % "2.3.11"                 % "test"
 )
 
 assemblySettings

@@ -18,6 +18,7 @@ import com.flipcast.push.gcm.service.FlipcastGcmRequestConsumer
 import com.flipcast.push.mongo.MongoDeviceDataSource
 import com.flipcast.push.mpns.service.FlipcastMpnsRequestConsumer
 import com.flipcast.push.service.{BulkMessageConsumer, DeviceHouseKeepingManager, DeviceIdAutoUpdateManager, PushMessageHistoryManager}
+import com.flipcast.rmq.RabbitMQConnectionHelper
 import com.flipcast.services._
 import com.typesafe.config.ConfigFactory
 import org.slf4j.LoggerFactory
@@ -162,14 +163,17 @@ object Flipcast extends App {
 
   def boot() {
 
-    //Register all the services
-    registerServices()
-
     //Initialize database connection
     ConnectionHelper.init()
 
+    //Initialize rmq connection
+    RabbitMQConnectionHelper.init()
+
     //Register datasource
     registerDataSources()
+
+    //Register all the services
+    registerServices()
 
     //Set service instance to active state
     serviceState = ServiceState.IN_ROTATION

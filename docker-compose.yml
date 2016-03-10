@@ -1,0 +1,29 @@
+mongodb:
+  image: mongo
+  hostname: mongodb
+  ports:
+   - "27017:27017"
+
+rabbitmq:
+  image: rabbitmq
+  hostname: rabbitmq
+  ports:
+   - "5672:5672"
+
+flipcast:
+  container_name: flipcast
+  build: .
+  ports:
+   - "9090:9090"
+  volumes:
+   - /var/log/flipcast
+   # enviroment valiables
+  environment:
+   - MONGO_CONNECTION_STRING=mongodb:27017
+   - DATABASE_NAME=flipcast
+   - RMQ_CONNECTION_STRING=rabbitmq:5672
+   - RMQ_USER=guest
+   - RMQ_PASSWORD=guest
+  links:
+   - mongodb
+   - rabbitmq

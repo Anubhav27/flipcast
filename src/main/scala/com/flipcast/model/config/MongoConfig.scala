@@ -12,7 +12,7 @@ case class MongoConfig(config: Config) {
 
   def hosts : List[String] = {
     try {
-      config.getStringList("hosts").asScala.toList
+      config.getString("hosts").split(",").toList
     } catch {
       case ex: Exception => List.empty[String]
     }

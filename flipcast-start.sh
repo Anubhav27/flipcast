@@ -1,14 +1,19 @@
 #! /bin/bash
 # Start script for flipcast service
+sleep 10
+
+#Export all config variables
+export MONGO_CONNECTION_STRING=$1
+export DATABASE_NAME=$2
+export RMQ_CONNECTION_STRING=$3
+export RMQ_USER=$4
+export RMQ_PASSWORD=$5
 
 #Application Name
-PACKAGE=flipcast-service
+PACKAGE=flipcast
 
 #Application Jar
-APP_JAR="flipcast-service.jar"
-
-#OOM Restart Command
-export OOM_RESTART_CMD="\"/etc/init.d/${PACKAGE} force-restart\""
+APP_JAR="flipcast.jar"
 
 #Memory settings
 JAVA_OPTS="${JAVA_OPTS} -Xms512m"
@@ -29,7 +34,7 @@ JAVA_OPTS="${JAVA_OPTS} -Djava.awt.headless=true"
 JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF-8"
 
 # Reduce the per-thread stack size
-JAVA_OPTS="${JAVA_OPTS} -Xss180k"
+JAVA_OPTS="${JAVA_OPTS} -Xss228k"
 
 # Force the JVM to use IPv4 stack
 JAVA_OPTS="${JAVA_OPTS} -Djava.net.preferIPv4Stack=true"
@@ -52,7 +57,6 @@ JAVA_OPTS="${JAVA_OPTS} -XX:CompileThreshold=50000"
 
 # Causes the JVM to dump its heap on OutOfMemory.
 JAVA_OPTS="${JAVA_OPTS} -XX:+HeapDumpOnOutOfMemoryError"
-JAVA_OPTS="${JAVA_OPTS} -XX:OnOutOfMemoryError=${OOM_RESTART_CMD}"
 
 #Setup remote JMX monitoring
 JAVA_OPTS="${JAVA_OPTS} -Dcom.sun.management.jmxremote"
@@ -61,8 +65,8 @@ JAVA_OPTS="${JAVA_OPTS} -Dcom.sun.management.jmxremote.authenticate=false"
 JAVA_OPTS="${JAVA_OPTS} -Dcom.sun.management.jmxremote.ssl=false"
 
 #Provide application configuration & log configuration file path
-JAVA_OPTS="${JAVA_OPTS} -Dapp.config=config/application.conf"
-JAVA_OPTS="${JAVA_OPTS} -Dlogback.configurationFile=config/logback.xml"
+JAVA_OPTS="${JAVA_OPTS} -Dapp.config=application.conf"
+JAVA_OPTS="${JAVA_OPTS} -Dlogback.configurationFile=logback.xml"
 
 #Java Executable
 JAVA=`which java`

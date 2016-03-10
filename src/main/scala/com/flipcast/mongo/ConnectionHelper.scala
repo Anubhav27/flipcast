@@ -45,7 +45,7 @@ object ConnectionHelper {
       val servers = config.hosts.map( h => {
         val tokens = h.split(":")
         new Imports.ServerAddress(tokens(0), tokens(1).toInt)
-      }).toList
+      })
       val credentials = config.user match {
         case Some(user) =>
           config.password match {

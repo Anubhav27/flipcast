@@ -14,9 +14,8 @@ object QueueProducerCache {
       case true =>
         registry.get(config)
       case false =>
-        val profile = Profiles.profile(config).get
         val producerRef = RabbitMQConnectionHelper
-          .createProducer(profile.queue, profile.exchange, profile.exchangeType, None, 0, profile.delayedDelivery.getOrElse(false))
+          .createProducer(config +"_queue", config +"_exchange", "direct", None, 0, false)
         registry.put(config, producerRef)
         producerRef
     }
