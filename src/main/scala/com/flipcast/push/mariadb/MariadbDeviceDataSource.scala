@@ -4,7 +4,7 @@ import java.util.{UUID, Date}
 
 import akka.event.slf4j.Logger
 import com.flipcast.push.common.DeviceDataSource
-import com.flipcast.push.mariadb.entity.{MessageHistory, Device}
+import com.flipcast.push.mariadb.entity.{SidelineMessage, MessageHistory, Device}
 import com.flipcast.push.model.{DeviceOperatingSystemType, DeviceData, PushHistoryData, SidelinedMessage}
 import com.flipcast.push.protocol.DeviceDataProtocol
 import org.joda.time.DateTime
@@ -25,7 +25,7 @@ object MariadbDeviceDataSource extends DeviceDataSource with DeviceDataProtocol 
   }
 
   override def sidelineMessage(message: SidelinedMessage): Boolean = {
-    //TODO: Implement this with sideline queues
+    SidelineMessage.create(message.id, message.config, message.messageType, DateTime.now(), Option(message.message))
     true
   }
 
