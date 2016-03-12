@@ -49,6 +49,11 @@ libraryDependencies ++= Seq(
   "com.google.guava"                %    "guava"                         % "18.0",
   "com.notnoop.apns"                %    "apns"                          % "1.0.0.Beta6",
   "org.mongodb"                     %%   "casbah"                        % "3.1.0",
+  "org.mariadb.jdbc"                %    "mariadb-java-client"           % "1.3.6",
+  "org.scalikejdbc"                 %%   "scalikejdbc"                   % "2.3.5",
+  "org.scalikejdbc"                 %%   "scalikejdbc-jsr310"            % "2.3.5",
+  "org.scalikejdbc"                 %%   "scalikejdbc-test"              % "2.3.5"                  % "test",
+  "com.zaxxer"                      %    "HikariCP"                      % "2.4.4",
   "commons-io"                      %    "commons-io"                    % "2.4",
   "com.github.sstone"               %%   "amqp-client"                   % "1.5",
   "com.google.code.findbugs"        %    "jsr305"                        % "3.0.1",
@@ -56,6 +61,8 @@ libraryDependencies ++= Seq(
 )
 
 assemblySettings
+
+scalikejdbcSettings
 
 parallelExecution in Test := false
 

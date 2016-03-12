@@ -9,12 +9,14 @@ import akka.event.slf4j.Logger
 import akka.io.IO
 import com.codahale.metrics.{MetricFilter, Slf4jReporter}
 import com.flipcast.common.MetricsRegistry
-import com.flipcast.model.config.{RmqConfig, MongoConfig, ServerConfig}
+import com.flipcast.mariadb.MariadbConnectionHelper
+import com.flipcast.model.config.{MariadbConfig, RmqConfig, MongoConfig, ServerConfig}
 import com.flipcast.mongo.ConnectionHelper
 import com.flipcast.push.apns.service.FlipcastApnsRequestConsumer
 import com.flipcast.push.common.{DeviceDataSourceManager, FlipcastSidelineConsumer}
 import com.flipcast.push.config._
 import com.flipcast.push.gcm.service.FlipcastGcmRequestConsumer
+import com.flipcast.push.mariadb.MariadbDeviceDataSource
 import com.flipcast.push.mongo.MongoDeviceDataSource
 import com.flipcast.push.mpns.service.FlipcastMpnsRequestConsumer
 import com.flipcast.push.service.{BulkMessageConsumer, DeviceHouseKeepingManager, DeviceIdAutoUpdateManager, PushMessageHistoryManager}
@@ -64,6 +66,8 @@ object Flipcast extends App {
   lazy val serverConfig = ServerConfig(config.getConfig("flipcast.config.server"))
 
   implicit lazy val mongoConfig = MongoConfig(config.getConfig("flipcast.config.mongo"))
+
+  implicit lazy val mariadbConfig = MariadbConfig(config.getConfig("flipcast.config.mariadb"))
 
   implicit lazy val rmqConfig = RmqConfig(config.getConfig("flipcast.config.rmq"))
 
@@ -124,7 +128,8 @@ object Flipcast extends App {
    * Register all the data source providers
    */
   def registerDataSources() {
-    DeviceDataSourceManager.register("default", MongoDeviceDataSource)
+    DeviceDataSourceManager.register("default", MariadbDeviceDataSource)
+//    DeviceDataSourceManager.register("default", MongoDeviceDataSource)
   }
 
   /**
@@ -165,6 +170,8 @@ object Flipcast extends App {
 
     //Initialize database connection
     ConnectionHelper.init()
+
+    MariadbConnectionHelper.init()
 
     //Initialize rmq connection
     RabbitMQConnectionHelper.init()
