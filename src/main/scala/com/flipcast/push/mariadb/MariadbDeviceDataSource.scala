@@ -1,12 +1,13 @@
 package com.flipcast.push.mariadb
 
-import java.util.Date
+import java.util.{UUID, Date}
 
 import akka.event.slf4j.Logger
 import com.flipcast.push.common.DeviceDataSource
-import com.flipcast.push.mariadb.entity.Device
+import com.flipcast.push.mariadb.entity.{MessageHistory, Device}
 import com.flipcast.push.model.{DeviceOperatingSystemType, DeviceData, PushHistoryData, SidelinedMessage}
 import com.flipcast.push.protocol.DeviceDataProtocol
+import org.joda.time.DateTime
 import scalikejdbc.AutoSession
 import spray.json.JsonParser
 
@@ -24,7 +25,7 @@ object MariadbDeviceDataSource extends DeviceDataSource with DeviceDataProtocol 
   }
 
   override def sidelineMessage(message: SidelinedMessage): Boolean = {
-    //TODO: Implement foxtrot push
+    //TODO: Implement this with sideline queues
     true
   }
 
@@ -48,13 +49,31 @@ object MariadbDeviceDataSource extends DeviceDataSource with DeviceDataProtocol 
   }
 
   override def recordHistory(config: String, key: String, message: String): Boolean = {
-    //TODO: Implement with foxtrot
+    val device = Device.findBy(config, buildWhereFromFilter(Map("cloudMessagingId" -> key)))
+    device match {
+      case Some(d) =>
+        MessageHistory.create(
+          UUID.randomUUID().toString,
+          config,
+          d.deviceId,
+          d.cloudMessagingId,
+          d.osName,
+          d.osVersion,
+          d.brand,
+          d.model,
+          d.appName,
+          d.appVersion,
+          DateTime.now,
+          message
+        )
+      case _ =>
+        log.warn("Message is being sent to invalid device: " +key)
+    }
     true
   }
 
   override def pushHistory(config: String, from: Date): PushHistoryData = {
-    //TODO: Implement with foxtrot
-    PushHistoryData(0, Map.empty)
+    PushHistoryData(MessageHistory.pushHistory(config, from), Map.empty)
   }
 
   override def register(config: String, deviceData: String, filter: Map[String, Any]): DeviceData = {

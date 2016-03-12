@@ -166,7 +166,7 @@ object MongoDeviceDataSource extends DeviceDataSource {
     val collection = ConnectionHelper.collection("push_message_history")
     val query = MongoDBObject.newBuilder
     query += "configName" -> config
-    val expr = query.result() ++ ("sync_version" $gt from)
+    val expr = query.result() ++ ("sentDate" $gt from)
     val total = collection.count(query.result())
     val byPlatform = collection.aggregate(List(MongoDBObject("$match" -> expr),
       MongoDBObject("$group" -> MongoDBObject("_id" -> "$osName", "counts" -> MongoDBObject("$sum" -> 1)))).asJava)
