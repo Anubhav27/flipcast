@@ -1,7 +1,6 @@
 package com.flipcast.model.requests
 
 import com.flipcast.push.model.PushMessage
-import com.flipcast.push.model.requests.FlipcastRequest
 
 /**
  * Model to represent a bulk message request

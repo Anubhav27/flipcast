@@ -89,6 +89,7 @@ trait BaseHttpServiceWorker extends ServiceProtocolSupport {
             case d: UnicastSuccessResponse => send[UnicastSuccessResponse](StatusCodes.OK, request.ctx, d)
             case d: MulticastSuccessResponse => send[MulticastSuccessResponse](StatusCodes.OK, request.ctx, d)
             case d: GetAllPushHistoryResponse => send[GetAllPushHistoryResponse](StatusCodes.OK, request.ctx, d)
+            case d: SmsUnicastSuccessResponse => send[SmsUnicastSuccessResponse](StatusCodes.OK, request.ctx, d)
           }
         case r: ServiceUnhandledResponse => unhandled(request.ctx)
         case r: ServiceFailureResponse => send[Throwable](StatusCodes.InternalServerError, request.ctx, r.error)
@@ -174,6 +175,8 @@ trait BaseHttpServiceWorker extends ServiceProtocolSupport {
       case r: MulticastSuccessResponse =>
         HttpResponse(status = status, entity = HttpEntity(ContentTypes.`application/json`, r.toJson.compactPrint))
       case r: GetAllPushHistoryResponse =>
+        HttpResponse(status = status, entity = HttpEntity(ContentTypes.`application/json`, r.toJson.compactPrint))
+      case r: SmsUnicastSuccessResponse =>
         HttpResponse(status = status, entity = HttpEntity(ContentTypes.`application/json`, r.toJson.compactPrint))
       case e: Throwable =>
           HttpResponse(status = status, entity = HttpEntity(ContentTypes.`text/plain(UTF-8)`, "Oops! Something went wrong!"))

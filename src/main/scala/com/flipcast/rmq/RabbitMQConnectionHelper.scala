@@ -63,7 +63,8 @@ object RabbitMQConnectionHelper {
     * @param system actor system that needs to be used to create the connection
     * @return ActorRef of consumer
     */
-  def createConsumer(queueName: String, exchange: String, exchangeType: String, listener: ActorRef, qos: Int, deadLetter: Option[String], ttl: Int = 0, delayedDelivery: Boolean)(implicit system: ActorSystem) = {
+  def createConsumer(queueName: String, exchange: String, exchangeType: String, listener: ActorRef,
+                     qos: Int = 1, deadLetter: Option[String] = None, ttl: Int = 0, delayedDelivery: Boolean = false)(implicit system: ActorSystem) = {
     val exParameters = delayedDelivery match {
       case true => clientProps + ("x-delayed-type" -> exchangeType)
       case false => clientProps

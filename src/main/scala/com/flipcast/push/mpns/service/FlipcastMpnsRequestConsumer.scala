@@ -4,7 +4,7 @@ import java.net.URL
 import java.util.UUID
 
 import com.flipcast.Flipcast
-import com.flipcast.push.common.FlipcastRequestConsumer
+import com.flipcast.push.common.FlipcastPushRequestConsumer
 import com.flipcast.push.gcm.protocol.GcmProtocol
 import com.flipcast.push.model.requests.{DeviceHousekeepingRequest, FlipcastPushRequest, RecordPushHistoryRequest}
 import com.flipcast.push.protocol.FlipcastPushProtocol
@@ -15,7 +15,6 @@ import spray.httpx.RequestBuilding._
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.xml.XML
 
 /**
@@ -24,7 +23,7 @@ import scala.xml.XML
  *
  * @author Phaneesh Nagaraja
  */
-class FlipcastMpnsRequestConsumer(priorityTag: String) extends FlipcastRequestConsumer with FlipcastPushProtocol with GcmProtocol {
+class FlipcastMpnsRequestConsumer(priorityTag: String) extends FlipcastPushRequestConsumer with FlipcastPushProtocol with GcmProtocol {
 
   override def configType() = "mpns"
 

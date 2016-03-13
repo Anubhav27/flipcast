@@ -2,7 +2,7 @@ package com.flipcast.push.apns.service
 
 import com.flipcast.Flipcast
 import com.flipcast.push.apns.protocol.ApnsProtocol
-import com.flipcast.push.common.FlipcastRequestConsumer
+import com.flipcast.push.common.FlipcastPushRequestConsumer
 import com.flipcast.push.model.requests.{FlipcastPushRequest, RecordPushHistoryRequest}
 import com.flipcast.push.protocol.FlipcastPushProtocol
 import org.joda.time.DateTime
@@ -14,7 +14,7 @@ import scala.collection.JavaConverters._
 /**
  * APNS consumer to send apns push messages
  */
-class FlipcastApnsRequestConsumer(priorityTag: String) extends FlipcastRequestConsumer with FlipcastPushProtocol with ApnsProtocol {
+class FlipcastApnsRequestConsumer(priorityTag: String) extends FlipcastPushRequestConsumer with FlipcastPushProtocol with ApnsProtocol {
 
   override def configType() = "apns"
 

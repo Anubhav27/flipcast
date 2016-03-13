@@ -1,5 +1,7 @@
 package com.flipcast.push.model.requests
 
+import com.flipcast.model.requests.FlipcastRequest
+
 import scala.reflect.ClassTag
 
 /**

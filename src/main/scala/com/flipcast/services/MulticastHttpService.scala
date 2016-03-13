@@ -2,11 +2,11 @@ package com.flipcast.services
 
 import com.flipcast.Flipcast
 import com.flipcast.common.{BaseHttpService, BaseHttpServiceWorker}
+import com.flipcast.config.WorkerConfigurationManager
 import com.flipcast.model.requests.{BulkMessageRequest, MulticastRequest, ServiceRequest}
 import com.flipcast.model.responses.{ServiceBadRequestResponse, ServiceSuccessResponse, _}
 import com.flipcast.protocol.BulkMessageRequestProtocol
 import com.flipcast.push.common.DeviceDataSourceManager
-import com.flipcast.push.config.WorkerConfigurationManager
 import com.flipcast.push.model.PushMessage
 import com.flipcast.push.protocol.{FlipcastPushProtocol, PushMessageProtocol}
 import spray.json._
