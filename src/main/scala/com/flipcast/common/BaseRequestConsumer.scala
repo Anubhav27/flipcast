@@ -1,13 +1,12 @@
-package com.flipcast.push.common
+package com.flipcast.common
 
 import java.util.concurrent.TimeUnit._
 
-import akka.actor.{PoisonPill, ActorRef, ActorSystem, Actor}
+import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill}
 import akka.event.slf4j.Logger
 import akka.util.Timeout
 import com.flipcast.Flipcast
-import com.flipcast.common.MetricsRegistry
-import com.flipcast.push.config.WorkerConfigurationManager
+import com.flipcast.config.WorkerConfigurationManager
 import com.flipcast.rmq.RabbitMQConnectionHelper
 import com.github.sstone.amqp.Amqp.Publish
 
@@ -27,6 +26,8 @@ abstract class BaseRequestConsumer extends Actor {
   var sidelineChannel: ActorRef = null
 
   var consumerRef: ActorRef = null
+
+  var resendChannelRef: ActorRef = null
 
   def consumerLatency = MetricsRegistry.timer(configType())
 
@@ -53,7 +54,10 @@ abstract class BaseRequestConsumer extends Actor {
       sidelineChannel = RabbitMQConnectionHelper.createProducer(configType() +"_" +priority +"_sideline", configType() +"_" +priority +"_sideline_exchange", "direct", None, -1, delayedDelivery = false)
     }
     if(consumerRef == null) {
-      consumerRef = RabbitMQConnectionHelper.createProducer(configType() +"_" +priority, configType() +"_" +priority +"_exchange", "direct", None, -1, delayedDelivery = false)
+      consumerRef = RabbitMQConnectionHelper.createConsumer(configType() +"_" +priority, configType() +"_" +priority +"_exchange", "direct", self)
+    }
+    if(resendChannelRef == null) {
+      resendChannelRef = RabbitMQConnectionHelper.createProducer(configType() +"_" +priority, configType() +"_" +priority +"_exchange", "direct", None, -1, delayedDelivery = false)
     }
     init()
     log.info("Starting message consumer on: " +config.configName +" Worker: " +self.path)

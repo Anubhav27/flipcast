@@ -1,9 +1,10 @@
-package com.flipcast.push.config
+package com.flipcast.config
 
 import java.util.concurrent.ConcurrentHashMap
 
 import com.flipcast.Flipcast
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 
 /**
  * Provides queue configuration for different push service providers

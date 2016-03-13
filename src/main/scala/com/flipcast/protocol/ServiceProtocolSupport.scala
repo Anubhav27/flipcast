@@ -1,5 +1,6 @@
 package com.flipcast.protocol
 
+import com.flipcast.model.requests.SmsUnicastRequest
 import spray.json._
 import spray.httpx.SprayJsonSupport
 import com.flipcast.model.responses._
@@ -55,6 +56,16 @@ trait ServiceProtocolSupport extends DefaultJsonProtocol
    * JSON format for multicast success response
    */
   implicit val MulticastSuccessResponseFormat = jsonFormat2(MulticastSuccessResponse)
+
+  /**
+    * JSON format for sms unicast request
+    */
+  implicit val SmsUnicastRequestFormat = jsonFormat4(SmsUnicastRequest)
+
+  /**
+    * JSON format for sms unicast success response
+    */
+  implicit val SmsUnicastSuccessResponseFormat = jsonFormat1(SmsUnicastSuccessResponse)
 
   /**
    * JSON format for device details registration request

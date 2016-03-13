@@ -1,18 +1,18 @@
 package com.flipcast.push.gcm.service
 
-import com.flipcast.push.common.FlipcastRequestConsumer
+import com.flipcast.Flipcast
+import com.flipcast.push.common.FlipcastPushRequestConsumer
+import com.flipcast.push.gcm.model.{GcmRequest, GcmResponse}
+import com.flipcast.push.gcm.protocol.GcmProtocol
+import com.flipcast.push.model.requests.{DeviceHousekeepingRequest, DeviceIdAutoUpdateRequest, FlipcastPushRequest, RecordPushHistoryRequest}
 import com.flipcast.push.protocol.FlipcastPushProtocol
 import spray.client.HttpDialog
-import spray.httpx.RequestBuilding._
-import scala.concurrent.{ExecutionContext, Await}
-import com.flipcast.push.gcm.model.{GcmResponse, GcmRequest}
 import spray.http.StatusCodes
-import com.flipcast.push.gcm.protocol.GcmProtocol
-import com.flipcast.Flipcast
-import ExecutionContext.Implicits.global
-import scala.collection.mutable.ListBuffer
+import spray.httpx.RequestBuilding._
 import spray.json._
-import com.flipcast.push.model.requests.{RecordPushHistoryRequest, FlipcastPushRequest, DeviceHousekeepingRequest, DeviceIdAutoUpdateRequest}
+
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.Await
 
 /**
  * Message Consumer for GCM requests
@@ -20,7 +20,7 @@ import com.flipcast.push.model.requests.{RecordPushHistoryRequest, FlipcastPushR
  *
  * @author Phaneesh Nagaraja
  */
-class FlipcastGcmRequestConsumer(priorityTag: String) extends FlipcastRequestConsumer with FlipcastPushProtocol with GcmProtocol {
+class FlipcastGcmRequestConsumer(priorityTag: String) extends FlipcastPushRequestConsumer with FlipcastPushProtocol with GcmProtocol {
 
   override def configType() = "gcm"
 

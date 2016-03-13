@@ -1,5 +1,4 @@
-package com.flipcast.push.config
-
+package com.flipcast.config
 
 case class PriorityConfig(workerInstances: Int = 1, workerName: String, sidelineWorkerName: String)
 

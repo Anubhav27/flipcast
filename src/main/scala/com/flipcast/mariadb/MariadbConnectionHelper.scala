@@ -3,7 +3,7 @@ package com.flipcast.mariadb
 import javax.sql.DataSource
 
 import com.flipcast.model.config.MariadbConfig
-import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import com.jolbox.bonecp.{BoneCPConfig, BoneCPDataSource}
 import scalikejdbc._
 
 /**
@@ -15,19 +15,18 @@ object MariadbConnectionHelper {
 
   def init() (implicit config: MariadbConfig) {
     Class.forName(config.driver)
-    val hikariConfig = new HikariConfig()
-    hikariConfig.setCatalog(config.database)
-    hikariConfig.setDriverClassName(config.driver)
-    hikariConfig.setConnectionTimeout(config.connectTimeout)
-    hikariConfig.setConnectionTestQuery(config.validationQuery)
-    hikariConfig.setJdbcUrl(String.format("jdbc:mariadb://%s/%s", config.hosts.mkString(","), config.database))
-    hikariConfig.setMaximumPoolSize(config.maxConnectionPoolSize)
-    hikariConfig.setMinimumIdle(config.minConnectionPoolSize)
-    hikariConfig.setPassword(config.password)
-    hikariConfig.setPoolName("flipcast")
-    hikariConfig.setUsername(config.user)
+    val bonecpConfig = new BoneCPConfig()
+    bonecpConfig.setDefaultCatalog(config.database)
+    bonecpConfig.setConnectionTimeoutInMs(config.connectTimeout)
+    bonecpConfig.setJdbcUrl(String.format("jdbc:mariadb://%s/%s", config.hosts.mkString(","), config.database))
+    bonecpConfig.setMinConnectionsPerPartition(config.maxConnectionPoolSize)
+    bonecpConfig.setMinConnectionsPerPartition(config.minConnectionPoolSize)
+    bonecpConfig.setPartitionCount(1)
+    bonecpConfig.setPassword(config.password)
+    bonecpConfig.setPoolName("flipcast")
+    bonecpConfig.setUsername(config.user)
     val dataSource: DataSource = {
-      val ds = new HikariDataSource(hikariConfig)
+      val ds = new BoneCPDataSource(bonecpConfig)
       ds
     }
     ConnectionPool.singleton(new DataSourceConnectionPool(dataSource))

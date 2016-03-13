@@ -3,10 +3,11 @@ package com.flipcast.push.service
 import java.util.{Date, UUID}
 
 import com.flipcast.Flipcast
+import com.flipcast.common.BaseRequestConsumer
+import com.flipcast.config.WorkerConfigurationManager
 import com.flipcast.model.requests.BulkMessageRequest
 import com.flipcast.protocol.BulkMessageRequestProtocol
-import com.flipcast.push.common.{BaseRequestConsumer, DeviceDataSourceManager, PushMessageTransformerRegistry}
-import com.flipcast.push.config.WorkerConfigurationManager
+import com.flipcast.push.common.{DeviceDataSourceManager, PushMessageTransformerRegistry}
 import com.flipcast.push.model.requests.FlipcastPushRequest
 import com.flipcast.push.model.{DeviceOperatingSystemType, SidelinedMessage}
 import com.github.sstone.amqp.Amqp.Delivery

@@ -7,8 +7,11 @@ import java.util.concurrent.TimeUnit
 import akka.actor.{ActorSystem, Props}
 import akka.event.slf4j.Logger
 import akka.io.IO
+import akka.pattern.ask
+import akka.util.Timeout
 import com.codahale.metrics.{MetricFilter, Slf4jReporter}
 import com.flipcast.common.MetricsRegistry
+import com.flipcast.config.WorkerConfigurationManager
 import com.flipcast.mariadb.MariadbConnectionHelper
 import com.flipcast.model.config.{MariadbConfig, MongoConfig, RmqConfig, ServerConfig}
 import com.flipcast.mongo.ConnectionHelper
@@ -21,10 +24,14 @@ import com.flipcast.push.mpns.service.FlipcastMpnsRequestConsumer
 import com.flipcast.push.service.{BulkMessageConsumer, DeviceHouseKeepingManager, DeviceIdAutoUpdateManager, PushMessageHistoryManager}
 import com.flipcast.rmq.RabbitMQConnectionHelper
 import com.flipcast.services._
+import com.flipcast.sms.config.{FileBasedSmsConfigurationProvider, SmsConfigurationManager, SmsConfigurationProvider}
+import com.flipcast.sms.gupshup.service.FlipcastGupshupRequestConsumer
 import com.typesafe.config.ConfigFactory
 import org.slf4j.LoggerFactory
 import spray.can.Http
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import scala.util.Try
 
 
@@ -40,6 +47,8 @@ object Flipcast extends App {
     * Logger for Flipcast app
     */
   lazy val log = Logger("flipcast")
+
+  implicit val timeout = Timeout(5.seconds)
 
   /**
     * Host name that will be used to bind the server
@@ -85,7 +94,17 @@ object Flipcast extends App {
       new FileBasedPushConfigurationProvider()(ConfigFactory.parseFile(new File(config.getString("flipcast.config.push.file.source"))))
   }
 
+  implicit val smsConfigurationProvider : SmsConfigurationProvider = config.getString("flipcast.config.sms.config") match {
+    case "file" =>
+      new FileBasedSmsConfigurationProvider()(ConfigFactory.parseFile(new File(config.getString("flipcast.config.sms.file.source"))))
+    case _ =>
+      log.warn("No SMS configuration provider available!")
+      null
+  }
+
   PushConfigurationManager.init()
+
+  SmsConfigurationManager.init()
 
   var serviceState: ServiceState.Value = nodeRole match {
     case "all" => ServiceState.IN_ROTATION
@@ -102,7 +121,12 @@ object Flipcast extends App {
   /**
     * Startup server
     */
-  IO(Http) ! Http.Bind(router, hostname, port = serverConfig.port)
+
+  val result = IO(Http) ? Http.Bind(router, hostname, serverConfig.port)
+  Await.result(result, timeout.duration)
+
+  //Register all the services
+  registerServices()
 
   def registerServices() {
 
@@ -156,6 +180,10 @@ object Flipcast extends App {
       val props = Props(classOf[BulkMessageConsumer], w)
       serviceRegistry.register(props, "bulk_" + w + "_actor", "akka.actor.bulk-dispatcher", c.workerInstances)
     }
+    WorkerConfigurationManager.config("gupshup").priorityConfigs.foreach{ case (w, c) =>
+      val props = Props(classOf[FlipcastGupshupRequestConsumer], w)
+      serviceRegistry.register(props, "gupshup_" + w + "_actor", "akka.actor.sms-dispatcher", c.workerInstances)
+    }
   }
 
   def startMetrics() {
@@ -182,9 +210,6 @@ object Flipcast extends App {
 
     //Register datasource
     registerDataSources()
-
-    //Register all the services
-    registerServices()
 
     //Set service instance to active state
     serviceState = ServiceState.IN_ROTATION

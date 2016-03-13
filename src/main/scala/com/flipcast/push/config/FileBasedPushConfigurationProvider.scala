@@ -83,7 +83,7 @@ class FileBasedPushConfigurationProvider(implicit config: Config) extends PushCo
     MpnsConfig(
       Try(config.getBoolean("push." + configName + ".mpns.secured")).getOrElse(false),
       Try(config.getString("push." + configName + ".mpns.certificate")).getOrElse("INVALID"),
-      Try(config.getString("push." + configName + ".mpns.password")).getOrElse("INVAID"),
+      Try(config.getString("push." + configName + ".mpns.password")).getOrElse("INVAID")
     )
   }
 }
