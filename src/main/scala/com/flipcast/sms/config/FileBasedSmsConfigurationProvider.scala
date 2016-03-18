@@ -18,7 +18,9 @@ class FileBasedSmsConfigurationProvider (implicit smsConfig: Config) extends Sms
     smsConfig.getStringList("sms.configs").asScala.map(c => {
       SmsConfig(
         configName = c,
-        smsConfigByType(c, smsConfig.getString("sms." +c +".type"))
+        smsConfigByType(c, smsConfig.getString("sms." +c +".type")),
+        templated = Try(smsConfig.getBoolean("sms." +c +".templated")).getOrElse(false),
+        templatePath = Try(Option(smsConfig.getString("sms." +c +".templated"))).getOrElse(None)
       )
     }).toList
   }
@@ -36,7 +38,11 @@ class FileBasedSmsConfigurationProvider (implicit smsConfig: Config) extends Sms
     * @return The push Configuration for the given config name
     */
   override def config(configName: String): SmsConfig = {
-    SmsConfig(configName, gupshupConfig(configName))
+    SmsConfig(configName,
+      gupshupConfig(configName),
+      Try(smsConfig.getBoolean("sms." +configName +".template")).getOrElse(false),
+      templatePath = Try(Option(smsConfig.getString("sms." +configName +".templatePath"))).getOrElse(None)
+    )
   }
 
   /**

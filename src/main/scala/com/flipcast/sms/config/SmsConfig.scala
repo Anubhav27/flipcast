@@ -5,7 +5,7 @@ import com.flipcast.config.BaseConfig
 /**
   * @author phaneesh
   */
-case class SmsConfig(configName: String, provider: SmsProviderConfig) extends BaseConfig {
+case class SmsConfig(configName: String, provider: SmsProviderConfig, templated: Boolean, templatePath: Option[String]) extends BaseConfig {
 
   def config = configName
 }

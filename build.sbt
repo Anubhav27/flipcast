@@ -31,6 +31,9 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "org.scala-lang"                  %    "scala-compiler"                % "2.11.6",
+  "org.scala-lang"                  %    "scala-library"                 % "2.11.6",
+  "org.scala-lang"                  %    "scala-reflect"                 % "2.11.6",
   "io.spray"                        %%   "spray-can"                     % "1.3.3",
   "io.spray"                        %%   "spray-routing"                 % "1.3.3",
   "io.spray"                        %%   "spray-testkit"                 % "1.3.3"                  % "test",
@@ -52,6 +55,7 @@ libraryDependencies ++= Seq(
   "org.mariadb.jdbc"                %    "mariadb-java-client"           % "1.3.6",
   "org.scalikejdbc"                 %%   "scalikejdbc"                   % "2.3.5",
   "org.scalikejdbc"                 %%   "scalikejdbc-jsr310"            % "2.3.5",
+  "org.scalatra.scalate"            %%   "scalate-core"                  % "1.7.1",
   "org.scalikejdbc"                 %%   "scalikejdbc-test"              % "2.3.5"                  % "test",
   "com.jolbox"                      %    "bonecp"                        % "0.8.0.RELEASE",
   "commons-io"                      %    "commons-io"                    % "2.4",
