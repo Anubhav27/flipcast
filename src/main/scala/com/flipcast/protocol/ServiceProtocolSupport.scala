@@ -13,6 +13,8 @@ import com.flipcast.model.responses.OutOfRotationResponse
 import com.flipcast.push.model.responses.DeviceDetailsRegisterResponse
 import com.flipcast.model.responses.UpdatePushConfigResponse
 
+import scala.util.Try
+
 /**
  * JSON protocol support for all models (request/response) used in the service
  *
@@ -58,11 +60,6 @@ trait ServiceProtocolSupport extends DefaultJsonProtocol
   implicit val MulticastSuccessResponseFormat = jsonFormat2(MulticastSuccessResponse)
 
   /**
-    * JSON format for sms unicast request
-    */
-  implicit val SmsUnicastRequestFormat = jsonFormat4(SmsUnicastRequest)
-
-  /**
     * JSON format for sms unicast success response
     */
   implicit val SmsUnicastSuccessResponseFormat = jsonFormat1(SmsUnicastSuccessResponse)
@@ -101,6 +98,55 @@ trait ServiceProtocolSupport extends DefaultJsonProtocol
     def read(json: JsValue) = {
       val data = json.convertTo[PushHistoryData]
       GetAllPushHistoryResponse(configName = "NA", data)
+    }
+  }
+
+  implicit object SmsUnicastRequestFormat extends JsonFormat[SmsUnicastRequest] {
+
+    def read(json: JsValue) = {
+      val configName = json.asJsObject.fields.contains("configName") match {
+        case true =>
+          json.asJsObject.fields("configName") match {
+            case s: JsString => s.value
+            case _ => "NA"
+          }
+        case false => "NA"
+      }
+      val provider = json.asJsObject.fields.contains("provider") match {
+        case true =>
+          json.asJsObject.fields("provider") match {
+            case s: JsString => s.value
+            case _ => "NA"
+          }
+        case false => "NA"
+      }
+      val to = json.asJsObject.fields.contains("to") match {
+        case true =>
+          json.asJsObject.fields("to") match {
+            case s: JsString => s.value
+            case _ => "NA"
+          }
+        case false => "NA"
+      }
+      val message = json.asJsObject.fields.contains("message") match {
+        case true =>
+          json.asJsObject.fields("message") match {
+            case s: JsString => s.value
+            case s: JsObject => s.compactPrint
+            case _ => "NA"
+          }
+        case false => "NA"
+      }
+      SmsUnicastRequest(configName, provider, message, to)
+    }
+
+    def write(value : SmsUnicastRequest) = {
+      JsObject(
+        "configName" -> JsString(value.configName),
+        "provider" -> JsString(value.provider),
+        "to" -> JsString(value.to),
+        "message" -> Try(JsonParser(value.message).asJsObject).getOrElse(JsString(value.message))
+      )
     }
   }
 
