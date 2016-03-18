@@ -9,6 +9,7 @@ dist/
 /deb
 .idea
 .idea_modules
+config/sms-configuration.conf
 .DS_Store
 log
 logs
